@@ -6,6 +6,7 @@ import { useDispatch } from 'react-redux';//Without this, dispatch(addItem(produ
 import { useSelector } from 'react-redux'; // use it to get the number of items in the cart.
 
 
+
 function ProductList({ onHomeClick }) {
     const [showCart, setShowCart] = useState(false);
     const [showPlants, setShowPlants] = useState(false); // State to control the visibility of the About Us page
@@ -14,6 +15,12 @@ function ProductList({ onHomeClick }) {
     const cartItems = useSelector((state) => state.cart.items); //  use it to get the number of items in the cart.
     const cartCount = cartItems.length; // use it to get the number of items in the cart.
 
+
+    //Access the Redux store to retrieve and display the total quantity of items currently in the cart.
+    const calculateTotalQuantity = () => {
+        return cartItems.reduce((total, item) => total + (item.quantity || 0), 0);
+      };
+      
 
     const plantsArray = [
         {
@@ -272,6 +279,10 @@ function ProductList({ onHomeClick }) {
             [product.name]: true, // Set the current product's name as a key with value 'true' to mark it as added
         }));
     };
+
+    
+
+    
     
     return (
         <div>
@@ -291,19 +302,19 @@ function ProductList({ onHomeClick }) {
                 <div style={styleObjUl}>
                     <div> <a href="#" onClick={(e) => handlePlantsClick(e)} style={styleA}>Plants</a></div>
                     <div> <a href="#" onClick={(e) => handleCartClick(e)} style={styleA}><h1 className='cart'><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" id="IconChangeColor" height="68" width="68"><rect width="156" height="156" fill="none"></rect><circle cx="80" cy="216" r="12"></circle><circle cx="184" cy="216" r="12"></circle><path d="M42.3,72H221.7l-26.4,92.4A15.9,15.9,0,0,1,179.9,176H84.1a15.9,15.9,0,0,1-15.4-11.6L32.5,37.8A8,8,0,0,0,24.8,32H8" fill="none" stroke="#faf9f9" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" id="mainIconPathAttribute"></path></svg>
-                    {cartCount > 0 && (
+
                         <span style={{
                         position: 'absolute',
-                        top: '10px',
-                        right: '30px',
+                        top: '30px',
+                        right: '33px',
                         backgroundColor: '',
                         borderRadius: '50%',
                         color: 'white',
                         padding: '2px 6px',
                         fontSize: '25px'
                         }}>
-                        {cartCount}
-                        </span>)} {/* we add (cartCount > 0 &&...) show a real-time count badge: */}
+                        {calculateTotalQuantity()} {/*Redux store to retrieve and display the total quantity of items currently in the cart.*/}
+                        </span> {/* we add <span> show a real-time count badge: */}
                     </h1></a></div>
                 </div>
             </div> 
@@ -330,8 +341,15 @@ function ProductList({ onHomeClick }) {
                                 <button
                                     className="product-button"
                                     onClick={() => handleAddToCart(plant)} // Handle adding plant to cart
-                                >
-                                    Add to Cart
+                                    disabled={addedToCart[plant.name]} // disable button if already added
+                                    style={{
+                                        backgroundColor: addedToCart[plant.name] ? 'gray' : 'green',
+                                        color: 'white',
+                                        cursor: addedToCart[plant.name] ? 'not-allowed' : 'pointer'
+                                    }}
+                                    >
+                                    {addedToCart[plant.name] ? 'Added to Cart' : 'Add to Cart'}
+                
                                 </button>
                                 </div>
                             ))}
